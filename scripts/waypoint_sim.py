@@ -2,43 +2,42 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-import actionlib
-from actionlib_msgs.msg import GoalStatus
 
-def move_base_client(waypoints):
-    client = actionlib.SimpleActionClient('move_base_simple', MoveBaseAction)
-    client.wait_for_server()
+def send_goal(x, y, yaw):
+    goal = PoseStamped()
+    goal.header.frame_id = "map"
+    goal.pose.position.x = x
+    goal.pose.position.y = y
+    goal.pose.orientation.z = yaw
+    goal.pose.orientation.w = 1.0
 
-    for waypoint in waypoints:
-        goal = MoveBaseGoal()
-        goal.target_pose = PoseStamped()
-        goal.target_pose.header.frame_id = 'map'
-        goal.target_pose.pose = waypoint
+    goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+    
+    rate = rospy.Rate(10)  # Publish at 10 Hz
+    timeout = 30  # 30 seconds timeout
 
-        client.send_goal(goal)
-        client.wait_for_result()
+    start_time = rospy.get_time()
+    while (rospy.get_time() - start_time) < timeout:
+        goal_pub.publish(goal)
+        rate.sleep()
 
-        if client.get_state() == GoalStatus.SUCCEEDED:
-            rospy.loginfo("Waypoint reached")
-        else:
-            rospy.logwarn("Failed to reach waypoint")
-
-if __name__ == '__main__':
+def main():
     try:
         rospy.init_node('waypoint_planner', anonymous=True)
-
+        
+        # Define your waypoints (x, y, yaw)
         waypoints = [
-            PoseStamped(
-                pose=Pose(
-                    position=Point(1.0, 0.0, 0.0),  # Adjust waypoint coordinates
-                    orientation=Quaternion(0.0, 0.0, 0.0, 1.0)
-                )
-            )
-        ]
+            (1.0, 0.0, 0.0),
+            (0.0,1.0,0.0)
+            ]
 
-        move_base_client(waypoints)
-
+        for waypoint in waypoints:
+            x, y, yaw = waypoint
+            send_goal(x, y, yaw)
+        
     except rospy.ROSInterruptException:
         pass
+
+if __name__ == '__main':
+    main()
 
