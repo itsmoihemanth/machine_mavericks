@@ -6,8 +6,8 @@ from geometry_msgs.msg import PoseStamped
 def send_goal():
 
     waypoints = [
-        (1.0, 0.0, 0.0),
-        (0.0, 1.0, 0.0)
+        (4.672, -0.034, 0.0),
+        (2.15, 0.49, 0.0)
     ]
 
     for waypoint in waypoints:
