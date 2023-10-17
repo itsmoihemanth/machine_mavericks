@@ -1,0 +1,6 @@
+<launch>
+
+  <node pkg="stretch_mavericks" type="Perception.py" name="perception_node" output="screen"/>
+
+</launch>
+

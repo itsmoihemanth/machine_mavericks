@@ -1,0 +1,6 @@
+<launch>
+
+  <node pkg="stretch_mavericks" type="waypoint_sim.py" name="waypoint_node_sim" output="screen"/>
+
+</launch>
+

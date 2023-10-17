@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="grasp_pkg" type="grasp_object.py" name="grasp_object_node" output="screen"/>
+  <node pkg="stretch_mavericks" type="grasp_object.py" name="grasp_object_node" output="screen"/>
 
 </launch>
 
