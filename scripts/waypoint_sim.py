@@ -2,14 +2,15 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
-
+import time
 def send_goal():
 
+    goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+    time.sleep(1)
     waypoints = [
-        (4.672, -0.034, 0.0),
-        (2.15, 0.49, 0.0)
+        (4.672, -0.034,0.0),
+        (0.0, 0.0, 0.0)
     ]
-
     for waypoint in waypoints:
         x, y, yaw = waypoint
         goal = PoseStamped()
@@ -18,8 +19,6 @@ def send_goal():
         goal.pose.position.y = y
         goal.pose.orientation.z = yaw
         goal.pose.orientation.w = 1.0
-
-        goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
 
         rate = rospy.Rate(10)  # Publish at 10 Hz
         timeout = 30  # 30 seconds timeout
@@ -30,9 +29,9 @@ def send_goal():
             rate.sleep()
 
 def main():
-    rospy.init_node('waypoint_node_sim', anonymous=True)
+    rospy.init_node('waypoint_node', anonymous=True)
+    send_goal()
     rospy.spin()
-    send_goal(x, y, yaw)
-
-if __name__ == '__main':
+  
+if __name__ == '__main__':
     main()
