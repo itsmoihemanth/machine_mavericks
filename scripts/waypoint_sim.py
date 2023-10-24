@@ -1,37 +1,47 @@
 #!/usr/bin/env python3
 
 import rospy
-from geometry_msgs.msg import PoseStamped
-import time
-def send_goal():
+from geometry_msgs.msg import Pose, Point, Quaternion, PoseStamped
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseFeedback, MoveBaseResult
+import actionlib
+from actionlib_msgs.msg import GoalStatus
 
-    goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
-    time.sleep(1)
-    waypoints = [
-        (4.672, -0.034,0.0),
-        (0.0, 0.0, 0.0)
-    ]
+def move_base_client(waypoints):
+    client = actionlib.SimpleActionClient('/move_base_simple/goal', MoveBaseAction)
+    client.wait_for_server()
+
     for waypoint in waypoints:
-        x, y, yaw = waypoint
-        goal = PoseStamped()
-        goal.header.frame_id = "map"
-        goal.pose.position.x = x
-        goal.pose.position.y = y
-        goal.pose.orientation.z = yaw
-        goal.pose.orientation.w = 1.0
+        goal = MoveBaseGoal()
+        goal.target_pose = PoseStamped()
+        goal.target_pose.header.frame_id = 'map'
+        goal.target_pose.pose = waypoint
 
-        rate = rospy.Rate(10)  # Publish at 10 Hz
-        timeout = 30  # 30 seconds timeout
+        client.send_goal(goal, feedback_cb=feedback_callback)
+        client.wait_for_result()
 
-        start_time = rospy.get_time()
-        while (rospy.get_time() - start_time) < timeout:
-            goal_pub.publish(goal)
-            rate.sleep()
+        if client.get_state() == GoalStatus.SUCCEEDED:
+            rospy.loginfo("Waypoint reached")
+        else:
+            rospy.logwarn("Failed to reach waypoint")
 
-def main():
-    rospy.init_node('waypoint_node', anonymous=True)
-    send_goal()
-    rospy.spin()
-  
+def feedback_callback(feedback):
+    # This callback can be used to monitor the progress of the navigation goal
+    rospy.loginfo("Current pose: x=%.2f, y=%.2f", feedback.base_position.pose.position.x, feedback.base_position.pose.position.y)
+
 if __name__ == '__main__':
-    main()
+    try:
+        rospy.init_node('waypoint_planner', anonymous=True)
+
+        waypoints = [
+            PoseStamped(
+                pose=Pose(
+                    position=Point(4.672, -0.034,0.0),  # Adjust waypoint coordinates
+                    orientation=Quaternion(0.0, 0.0, 0.0, 1.0)
+                )
+            ),
+        ]
+
+        move_base_client(waypoints)
+
+    except rospy.ROSInterruptException:
+        pass
