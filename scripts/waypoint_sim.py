@@ -7,7 +7,7 @@ import actionlib
 from actionlib_msgs.msg import GoalStatus
 
 def move_base_client(waypoints):
-    client = actionlib.SimpleActionClient('/move_base_simple/goal', MoveBaseAction)
+    client = actionlib.SimpleActionClient('move_base_simple', MoveBaseAction)
     client.wait_for_server()
 
     for waypoint in waypoints:
