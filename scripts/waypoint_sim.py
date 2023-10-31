@@ -12,7 +12,6 @@ def move_base_client(waypoints):
 
     for waypoint in waypoints:
         goal = MoveBaseGoal()
-        goal.target_pose = PoseStamped()
         goal.target_pose.header.frame_id = 'map'
         goal.target_pose.pose = waypoint
 
@@ -32,14 +31,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('waypoint_planner', anonymous=True)
 
-        waypoints = [
-            PoseStamped(
-                pose=Pose(
-                    position=Point(4.672, -0.034,0.0),  # Adjust waypoint coordinates
-                    orientation=Quaternion(0.0, 0.0, 0.0, 1.0)
-                )
-            ),
-        ]
+        waypoints = [(2.248, 0.704,0.0), (2.956, 0.638,0.0), (3.604, 2.762,0.0)]
 
         move_base_client(waypoints)
 
