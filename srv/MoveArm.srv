@@ -1,0 +1,4 @@
+geometry_msgs/Point pt #3D target for positioning end-effector
+---
+bool success     # Did it succeed
+string message   # Informational message

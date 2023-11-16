@@ -1,0 +1,6 @@
+<launch>
+
+  <node pkg="stretch_mavericks" type="mapping_node.py" name="mapping_node" output="screen"/>
+
+</launch>
+

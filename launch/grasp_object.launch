@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="grasp_pkg" type="grasp_object_client.py" name="grasp_object_client_node" output="screen"/>
+</launch>
+
